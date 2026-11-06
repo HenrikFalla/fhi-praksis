@@ -308,7 +308,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Last opp filer som Pages-artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           # '.' betyr rotmappen i repositoriet ditt.
           # Hvis index.html ligger i en undermappe (f.eks. 'src/'), endrer du '.' til './src'
@@ -339,7 +339,7 @@ jobs:
               og <code>id-token: write</code>).
             </li>
             <li>
-              <code>actions/upload-pages-artifact@v3</code>: Pakker sammen alle
+              <code>actions/upload-pages-artifact@v4</code>: Pakker sammen alle
               filene i <code>path: "."</code> til en pakke klar for publisering.
             </li>
             <li>
@@ -347,6 +347,30 @@ jobs:
               nettsiden tilgjengelig på din <code>github.io</code>-adresse.
             </li>
           </ul>
+
+          <fhi-callout
+            color="neutral"
+            heading="Hva hvis prosjektet ligger i en undermappe?"
+            variant="bordered"
+          >
+            <fhi-icon-circle-info slot="icon"></fhi-icon-circle-info>
+            <p>
+              Dersom HTML-, CSS- og JS-filene dine ligger i en undermappe i
+              repositoriet (for eksempel <code>./min-undermappe</code>):
+            </p>
+            <ol class="instruction-list">
+              <li>
+                Workflow-filen <code>.github/workflows/deploy.yml</code> må
+                <strong>alltid ligge i rotmappen</strong> av Git-repositoriet
+                (ikke inne i undermappen).
+              </li>
+              <li>
+                Endre <code>path: "."</code> under
+                <code>actions/upload-pages-artifact@v4</code> til stien for
+                undermappen din, f.eks. <code>path: "./min-undermappe"</code>.
+              </li>
+            </ol>
+          </fhi-callout>
 
           <p>
             Commit og push <code>.github/workflows/deploy.yml</code> til GitHub:
@@ -568,9 +592,93 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Last opp dist-mappen som Pages-artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "./dist"
+
+      - name: Publiser til GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4</code></pre>
+          </div>
+
+          <h3>3. Ligger npm/Vite-prosjektet i en undermappe?</h3>
+          <p>
+            Hvis <code>package.json</code> og
+            <code>package-lock.json</code> ikke ligger i rotmappen av
+            repositoriet, men inne i en undermappe (f.eks.
+            <code>./min-undermappe</code>), må du gjøre tre tilpasninger i
+            <code>.github/workflows/deploy.yml</code>:
+          </p>
+          <ol class="instruction-list">
+            <li>
+              Legg til <code>defaults.run.working-directory</code> på jobben
+              slik at <code>npm ci</code> og <code>npm run build</code> kjøres
+              inne i undermappen.
+            </li>
+            <li>
+              Legg til <code>cache-dependency-path</code> under
+              <code>actions/setup-node@v4</code> slik at den finner
+              <code>package-lock.json</code> i undermappen.
+            </li>
+            <li>
+              Oppdater <code>path</code> under
+              <code>actions/upload-pages-artifact@v4</code> til
+              <code>"./min-undermappe/dist"</code>.
+            </li>
+          </ol>
+
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-label"
+                >.github/workflows/deploy.yml (npm build i undermappe)</span
+              >
+              <fhi-button
+                color="neutral"
+                variant="subtle"
+                size="small"
+                type="button"
+                data-copy-target="code-step-5-subfolder-yaml"
+              >
+                <fhi-icon-copy></fhi-icon-copy>
+                <span class="copy-btn-text">Kopier kode</span>
+              </fhi-button>
+            </div>
+            <pre><code id="code-step-5-subfolder-yaml">jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    # 1. Kjør kommandoer (npm ci, npm run build) i undermappen:
+    defaults:
+      run:
+        working-directory: ./min-undermappe
+    steps:
+      - name: Sjekk ut koden fra repositoriet
+        uses: actions/checkout@v4
+
+      - name: Sett opp Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          # 2. Pek til package-lock.json i undermappen:
+          cache-dependency-path: "./min-undermappe/package-lock.json"
+
+      - name: Installer avhengigheter
+        run: npm ci
+
+      - name: Bygg prosjektet
+        run: npm run build
+
+      - name: Konfigurer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Last opp dist-mappen som Pages-artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          # 3. Last opp dist-mappen fra undermappen:
+          path: "./min-undermappe/dist"
 
       - name: Publiser til GitHub Pages
         id: deployment
@@ -600,28 +708,40 @@ jobs:
             <li>
               <strong>Workflowen starter ikke når jeg pusher:</strong>
               Kontroller at filen heter nøyaktig
-              <code>.github/workflows/deploy.yml</code> og at branchen din heter
-              <code>main</code> (hvis den heter <code>master</code>, endre
-              <code>branches: ["main"]</code> i YAML-filen).
+              <code>.github/workflows/deploy.yml</code> (plassert i rotmappen av
+              repositoriet) og at branchen din heter <code>main</code> (hvis den
+              heter <code>master</code>, endre <code>branches: ["main"]</code> i
+              YAML-filen).
             </li>
             <li>
               <strong>Jobben feiler på Configure eller Deploy Pages:</strong>
               Dobbeltsjekk <strong>Steg 2</strong> — under
               <em>Settings &rarr; Pages &rarr; Source</em> må det stå
               <strong>GitHub Actions</strong>, og repositoriet må være
-              <strong>Public</strong>.
+              <strong>Public</strong>. Pass også på at du bruker
+              <code>actions/upload-pages-artifact@v4</code> (og ikke vanlig
+              <code>actions/upload-artifact</code>).
             </li>
             <li>
               <strong>Nettsiden viser 404 Not Found:</strong>
               Sjekk at <code>index.html</code> ligger i mappen som
               <code>path</code> peker til i
-              <code>actions/upload-pages-artifact@v3</code> (<code>"."</code>
-              for rotmappen, eller <code>"./dist"</code> ved bruk av Vite).
+              <code>actions/upload-pages-artifact@v4</code> (<code>"."</code>
+              for rotmappen, <code>"./dist"</code> ved bruk av Vite, eller
+              <code>"./min-undermappe"</code> dersom prosjektet ligger i en
+              undermappe).
             </li>
             <li>
-              <strong>Steget <code>npm ci</code> feiler (i Steg 5):</strong>
-              Pass på at både <code>package.json</code> og
-              <code>package-lock.json</code> er committet og pushet til GitHub.
+              <strong
+                >Feilen <code>Dependencies lock file is not found</code> (i Steg
+                5):</strong
+              >
+              Pass på at <code>package-lock.json</code> er committet og pushet.
+              Hvis prosjektet ligger i en undermappe, må du legge til
+              <code>cache-dependency-path</code> under
+              <code>actions/setup-node@v4</code> og
+              <code>defaults.run.working-directory</code> på jobben (se punkt 3
+              i Steg 5).
             </li>
           </ul>
         </section>

@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-
-    workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,8 +19,11 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./github-actions/publish-to-github-pages
     steps:
       - name: Sjekk ut koden fra repository
         uses: actions/checkout@v4
@@ -31,6 +33,7 @@ jobs:
         with:
           node-version: 22
           cache: "npm"
+          cache-dependency-path: "./github-actions/publish-to-github-pages/package-lock.json"
 
       - name: Installer avhengigheter
         run: npm ci
@@ -41,8 +44,8 @@ jobs:
       - name: Konfigurer Github Pages
         uses: actions/configure-pages@v5
 
-      - name: Last opp filer som Pages artifakter
-        uses: actions/upload-artifact@v4
+      - name: Last opp filer som Pages-artifact
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "./github-actions/publish-to-github-pages/dist"
 
