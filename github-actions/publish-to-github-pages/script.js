@@ -10,6 +10,70 @@ import "@folkehelseinstituttet/designsystem/fhi-link";
 // Nøkkel for lagring av fremgang i nettleserens localStorage
 const CHECKLIST_STORAGE_KEY = "gh_pages_guide_progress";
 
+const colors = [
+  "#f44336",
+  "#e91e63",
+  "#9c27b0",
+  "#673ab7",
+  "#3f51b5",
+  "#2196f3",
+  "#03a9f4",
+  "#00bcd4",
+  "#4caf50",
+  "#ffeb3b",
+  "#ff9800",
+];
+
+function createConfetti() {
+  const container = document.getElementById("confetti-container");
+  if (!container) return;
+  const particleCount = 750;
+
+  for (let i = 0; i < particleCount; i++) {
+    const confetti = document.createElement("div");
+    confetti.classList.add("confetti-piece");
+
+    // Halvparten fra nederst til venstre (1), halvparten fra nederst til høyre (-1)
+    const fromLeft = i % 2 === 0;
+    const direction = fromLeft ? 1 : -1;
+
+    const size = Math.random() * 8 + 6; // 6px to 14px
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const duration = Math.random() * 1.5 + 2.2; // 2.2s to 3.7s
+    const delay = Math.random() * 0.35;
+
+    // Vinkel mellom 35° og 75° oppover inn i skjermen
+    const angleDeg = Math.random() * 40 + 35;
+    const angleRad = (angleDeg * Math.PI) / 180;
+    const distance = Math.random() * 55 + 35; // hvor langt skuddet rekker (i vh/vw)
+
+    const peakX = Math.cos(angleRad) * distance * direction;
+    const peakY = -Math.sin(angleRad) * (distance * 1.2);
+    const endX = peakX * 1.35;
+    const rotation = (Math.random() * 720 + 360) * direction;
+
+    confetti.style.width = `${size}px`;
+    confetti.style.height = `${size * 0.45}px`;
+    confetti.style.backgroundColor = color;
+    confetti.style.left = fromLeft ? "0%" : "100%";
+    confetti.style.setProperty("--peak-x", `${peakX}vw`);
+    confetti.style.setProperty("--peak-y", `${peakY}vh`);
+    confetti.style.setProperty("--end-x", `${endX}vw`);
+    confetti.style.setProperty("--rot", `${rotation}deg`);
+    confetti.style.animationDuration = `${duration}s`;
+    confetti.style.animationDelay = `${delay}s`;
+
+    container.appendChild(confetti);
+
+    setTimeout(
+      () => {
+        confetti.remove();
+      },
+      (duration + delay) * 650,
+    );
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initStepProgress();
   initCopyButtons();
@@ -34,7 +98,10 @@ function initStepProgress() {
     savedState = {};
   }
 
-  function updateProgress() {
+  let wasObligatoryDone = false;
+  let wasAllDone = false;
+
+  function updateProgress(triggerCelebration = false) {
     const total = checkboxes.length;
     let completed = 0;
 
@@ -61,6 +128,23 @@ function initStepProgress() {
       "color",
       completed === total ? "success" : "neutral",
     );
+
+    const obligatoryDone = ["1", "2", "3", "4"].every((step) =>
+      Boolean(savedState[step]),
+    );
+    const allDone = ["1", "2", "3", "4", "5"].every((step) =>
+      Boolean(savedState[step]),
+    );
+
+    if (
+      triggerCelebration &&
+      ((obligatoryDone && !wasObligatoryDone) || (allDone && !wasAllDone))
+    ) {
+      createConfetti();
+    }
+
+    wasObligatoryDone = obligatoryDone;
+    wasAllDone = allDone;
   }
 
   checkboxes.forEach((cb) => {
@@ -68,17 +152,17 @@ function initStepProgress() {
     if (savedState[step]) {
       cb.checked = true;
     }
-    cb.addEventListener("change", updateProgress);
+    cb.addEventListener("change", () => updateProgress(true));
   });
 
   resetBtn.addEventListener("click", () => {
     checkboxes.forEach((cb) => {
       cb.checked = false;
     });
-    updateProgress();
+    updateProgress(false);
   });
 
-  updateProgress();
+  updateProgress(false);
 }
 
 /**
