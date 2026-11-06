@@ -42,7 +42,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Last opp filer som Pages artifakter
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: "./github-actions/publish-to-github-pages/dist"
 
