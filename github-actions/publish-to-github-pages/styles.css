@@ -1,0 +1,402 @@
+@import "@folkehelseinstituttet/designsystem/theme/default.css";
+
+:root {
+  /* Hovedfarger basert på FHI Designsystem tokens */
+  --primary-color: var(--fhi-color-accent-base-default);
+  --primary-hover: var(--fhi-color-accent-base-hover);
+  --accent-bg: var(--fhi-color-accent-background-subtle);
+  --accent-border: var(--fhi-color-accent-border-subtle);
+
+  /* Bakgrunn, tekst og rammer fra FHI Designsystem */
+  --bg-color: var(--fhi-color-neutral-background-subtle);
+  --surface-color: var(--fhi-color-neutral-background-default);
+  --text-color: var(--fhi-color-neutral-text-default);
+  --text-muted: var(--fhi-color-neutral-text-subtle);
+  --border-color: var(--fhi-color-neutral-border-subtle);
+  --border-width: var(--fhi-dimension-border-width);
+  --border-width-highlight: var(--fhi-dimension-border-width-focus);
+  --code-bg: var(--fhi-color-neutral-surface-default);
+
+  /* Layout og avrunding */
+  --radius: var(--fhi-border-radius-150);
+  --radius-sm: var(--fhi-border-radius-100);
+  --radius-xs: var(--fhi-border-radius-050);
+  --shadow: 0 var(--fhi-spacing-050) var(--fhi-spacing-150)
+    color-mix(in srgb, var(--fhi-greyblue-900) 6%, transparent);
+
+  /* Font og typografi fra FHI Designsystem */
+  --font-family: var(--fhi-font-family-default);
+  --font-size-default: var(--fhi-typography-body-medium-font-size);
+  --font-size-small: var(--fhi-typography-body-small-font-size);
+  --line-height-default: var(--fhi-typography-body-medium-line-height);
+  --letter-spacing-default: var(--fhi-typography-body-medium-letter-spacing);
+  --font-weight-default: var(--fhi-font-weight-regular);
+  --font-weight-bold: var(--fhi-font-weight-bold);
+  --font-weight-display: var(--fhi-font-weight-medium);
+
+  /* Heading font sizes fra FHI Designsystem (Headline & Title tokens) */
+  --font-size-h1: var(--fhi-typography-headline-large-font-size);
+  --font-size-h2: var(--fhi-typography-headline-medium-font-size);
+  --font-size-h3: var(--fhi-typography-headline-small-font-size);
+  --font-size-h4: var(--fhi-typography-title-large-font-size);
+  --font-size-h5: var(--fhi-typography-title-medium-font-size);
+  --font-size-h6: var(--fhi-typography-title-small-font-size);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body,
+header,
+main,
+aside,
+nav,
+footer,
+section,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li,
+pre,
+code {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+pre {
+  margin: var(--fhi-spacing-0);
+  padding: var(--fhi-spacing-0);
+}
+
+body {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-default);
+  font-size: var(--font-size-default);
+  letter-spacing: var(--letter-spacing-default);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: var(--line-height-default);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-display);
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  line-height: var(--fhi-typography-headline-large-line-height);
+  letter-spacing: var(--fhi-typography-headline-large-letter-spacing);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  line-height: var(--fhi-typography-headline-medium-line-height);
+  letter-spacing: var(--fhi-typography-headline-medium-letter-spacing);
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+  line-height: var(--fhi-typography-headline-small-line-height);
+  letter-spacing: var(--fhi-typography-headline-small-letter-spacing);
+  margin-top: var(--fhi-spacing-100);
+}
+
+h4 {
+  font-size: var(--font-size-h4);
+  line-height: var(--fhi-typography-title-large-line-height);
+  letter-spacing: var(--fhi-typography-title-large-letter-spacing);
+}
+
+h5 {
+  font-size: var(--font-size-h5);
+  line-height: var(--fhi-typography-title-medium-line-height);
+  letter-spacing: var(--fhi-typography-title-medium-letter-spacing);
+}
+
+h6 {
+  font-size: var(--font-size-h6);
+  line-height: var(--fhi-typography-title-small-line-height);
+  letter-spacing: var(--fhi-typography-title-small-letter-spacing);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+.container {
+  width: 100%;
+  max-width: calc(var(--fhi-spacing-1000) * 14);
+  margin: var(--fhi-spacing-0) auto;
+  padding: var(--fhi-spacing-0) var(--fhi-spacing-250);
+}
+
+/* Header */
+.site-header {
+  background-color: var(--surface-color);
+  border-bottom: var(--border-width) solid var(--border-color);
+  padding: var(--fhi-spacing-300) var(--fhi-spacing-0);
+  margin-bottom: var(--fhi-spacing-400);
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--fhi-spacing-200);
+  flex-wrap: wrap;
+}
+
+.brand h1 {
+  margin-top: var(--fhi-spacing-100);
+}
+
+.header-lead {
+  margin-top: var(--fhi-spacing-100);
+  max-width: calc(var(--fhi-spacing-1000) * 9);
+}
+
+/* Two-Column Guide Layout */
+.guide-layout {
+  display: grid;
+  grid-template-columns: calc(var(--fhi-spacing-1000) * 3.8) minmax(0, 1fr);
+  gap: var(--fhi-spacing-400);
+  align-items: start;
+  flex: 1;
+  margin-bottom: var(--fhi-spacing-600);
+}
+
+@media (max-width: 900px) {
+  .guide-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sticky Aside Sidebar */
+.guide-sidebar {
+  position: sticky;
+  top: var(--fhi-spacing-300);
+}
+
+@media (max-width: 900px) {
+  .guide-sidebar {
+    position: static;
+  }
+}
+
+.sidebar-card {
+  gap: var(--fhi-spacing-200);
+}
+
+.sidebar-steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fhi-spacing-050);
+}
+
+.sidebar-step-item {
+  border-radius: var(--radius-xs);
+}
+
+.sidebar-ref-item {
+  margin-top: var(--fhi-spacing-100);
+  padding-top: var(--fhi-spacing-100);
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+.sidebar-step-link {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fhi-spacing-100);
+  padding: var(--fhi-spacing-100) var(--fhi-spacing-150);
+  border-radius: var(--radius-xs);
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: var(--font-size-small);
+  font-weight: var(--fhi-font-weight-medium);
+  transition: background-color var(--fhi-motion-duration-quick)
+    var(--fhi-motion-ease-default);
+}
+
+.sidebar-step-link:hover {
+  background-color: var(--code-bg);
+  color: var(--primary-color);
+}
+
+.step-number {
+  color: var(--text-muted);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Strikethrough state when a step is marked done */
+.sidebar-step-item.is-completed .sidebar-step-link {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.sidebar-step-item.is-completed .step-number {
+  color: var(--fhi-color-success-text-default);
+}
+
+.sidebar-actions {
+  padding-top: var(--fhi-spacing-100);
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+/* Main Content & Step Cards */
+.guide-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fhi-spacing-400);
+}
+
+.card {
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius);
+  padding: var(--fhi-spacing-300);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fhi-spacing-200);
+}
+
+.step-card {
+  scroll-margin-top: var(--fhi-spacing-300);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--fhi-spacing-150);
+}
+
+p {
+  color: var(--text-muted);
+  font-size: var(--font-size-default);
+}
+
+/* Lists inside steps */
+.instruction-list,
+.explanation-list {
+  padding-left: var(--fhi-spacing-250);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fhi-spacing-100);
+  color: var(--text-color);
+  font-size: var(--font-size-default);
+}
+
+.instruction-list strong,
+.explanation-list strong {
+  font-weight: var(--font-weight-bold);
+}
+
+/* Inline code */
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-small);
+  background-color: var(--code-bg);
+  color: var(--text-color);
+  padding: calc(var(--fhi-spacing-050) / 2) var(--fhi-spacing-050);
+  border-radius: var(--radius-xs);
+}
+
+/* Code blocks with copy button */
+.code-block {
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background-color: var(--bg-color);
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--fhi-spacing-150);
+  padding: var(--fhi-spacing-100) var(--fhi-spacing-200);
+  background-color: var(--code-bg);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.code-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-muted);
+}
+
+.code-block pre {
+  padding: var(--fhi-spacing-200);
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.code-block pre code {
+  background: transparent;
+  padding: var(--fhi-spacing-0);
+  border-radius: var(--fhi-spacing-0);
+  font-size: var(--font-size-small);
+  color: var(--text-color);
+}
+
+/* Info Box */
+.info-box {
+  background-color: var(--accent-bg);
+  border: var(--border-width) solid var(--accent-border);
+  border-radius: var(--radius-sm);
+  padding: var(--fhi-spacing-200);
+}
+
+.info-box p {
+  color: var(--text-color);
+}
+
+/* Step Completion Footer */
+.step-completion {
+  margin-top: var(--fhi-spacing-100);
+  padding-top: var(--fhi-spacing-200);
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+/* Footer */
+.site-footer {
+  border-top: var(--border-width) solid var(--border-color);
+  padding: var(--fhi-spacing-300) var(--fhi-spacing-0);
+  text-align: center;
+  background-color: var(--surface-color);
+}

@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guide: Publiser til GitHub Pages med GitHub Actions</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <fhi-tag color="accent" variant="bordered"
+            >GitHub Actions + Pages</fhi-tag
+          >
+          <h1>Publisering til GitHub Pages med GitHub Actions</h1>
+          <p class="header-lead">
+            En steg-for-steg-guide for å sette opp automatisk publisering
+            (CI/CD) av ditt eget HTML, CSS og JavaScript-prosjekt til GitHub
+            Pages.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div class="container guide-layout">
+      <!-- Sticky Aside: Oversikt og fremdrift -->
+      <aside class="guide-sidebar" aria-label="Steg i guiden">
+        <div class="card sidebar-card">
+          <div class="card-header">
+            <h2>Steg i guiden</h2>
+            <fhi-tag id="progress-badge" color="neutral" variant="bordered"
+              >0 / 5 fullført</fhi-tag
+            >
+          </div>
+
+          <nav aria-label="Stegnavigasjon">
+            <ol class="sidebar-steps">
+              <li class="sidebar-step-item" data-sidebar-step="1">
+                <a class="sidebar-step-link" href="#steg-1">
+                  <span class="step-number">1.</span>
+                  <span class="step-title">Klargjør ditt eget prosjekt</span>
+                </a>
+              </li>
+              <li class="sidebar-step-item" data-sidebar-step="2">
+                <a class="sidebar-step-link" href="#steg-2">
+                  <span class="step-number">2.</span>
+                  <span class="step-title">Aktiver GitHub Pages</span>
+                </a>
+              </li>
+              <li class="sidebar-step-item" data-sidebar-step="3">
+                <a class="sidebar-step-link" href="#steg-3">
+                  <span class="step-number">3.</span>
+                  <span class="step-title"
+                    >Opprett GitHub Actions-workflow</span
+                  >
+                </a>
+              </li>
+              <li class="sidebar-step-item" data-sidebar-step="4">
+                <a class="sidebar-step-link" href="#steg-4">
+                  <span class="step-number">4.</span>
+                  <span class="step-title">Test automatisk publisering</span>
+                </a>
+              </li>
+              <li class="sidebar-step-item" data-sidebar-step="5">
+                <a class="sidebar-step-link" href="#steg-5">
+                  <span class="step-number">5.</span>
+                  <span class="step-title"
+                    >Byggesteg med npm/Vite (Valgfritt)</span
+                  >
+                </a>
+              </li>
+              <li class="sidebar-step-item sidebar-ref-item">
+                <a class="sidebar-step-link" href="#feilsoking">
+                  <span class="step-title">Vanlige feil og feilsøking</span>
+                </a>
+              </li>
+            </ol>
+          </nav>
+
+          <div class="sidebar-actions">
+            <fhi-button
+              id="reset-checklist"
+              color="neutral"
+              variant="outlined"
+              size="small"
+              type="button"
+            >
+              Nullstill fremgang
+            </fhi-button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Hovedinnhold: Steg-seksjoner -->
+      <main class="guide-content">
+        <!-- Steg 1 -->
+        <section
+          id="steg-1"
+          class="card step-card"
+          aria-labelledby="steg-1-heading"
+        >
+          <div class="card-header">
+            <h2 id="steg-1-heading">
+              Steg 1: Klargjør ditt eget HTML/CSS/JS-prosjekt
+            </h2>
+            <fhi-tag color="accent" variant="bordered">Steg 1</fhi-tag>
+          </div>
+
+          <p>
+            Start med ditt eget nettsideprosjekt (eller lag en ny mappe med en
+            enkel <code>index.html</code>). For at GitHub Pages skal fungere på
+            en gratis GitHub-konto, må repositoriet ditt på GitHub være satt til
+            <strong>Public</strong>.
+          </p>
+
+          <ol class="instruction-list">
+            <li>
+              Sørg for at prosjektet ditt har en <code>index.html</code>-fil i
+              rotmappen (eller i en kjent undermappe).
+            </li>
+            <li>
+              Opprett et nytt, <strong>Public</strong> repository på
+              <a href="https://github.com/new" target="_blank" rel="noopener"
+                >github.com/new</a
+              >
+              dersom du ikke allerede har et.
+            </li>
+            <li>
+              Koble prosjektmappen din til GitHub og push koden til
+              <code>main</code>-branchen:
+            </li>
+          </ol>
+
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-label">Terminal ( i ditt eget prosjekt )</span>
+              <fhi-button
+                color="neutral"
+                variant="subtle"
+                size="small"
+                type="button"
+                data-copy-target="code-step-1"
+              >
+                <fhi-icon-copy></fhi-icon-copy>
+                <span class="copy-btn-text">Kopier kode</span>
+              </fhi-button>
+            </div>
+            <pre><code id="code-step-1">git add .
+git commit -m "Første versjon av nettsiden"
+git branch -M main
+git push -u origin main</code></pre>
+          </div>
+
+          <div class="step-completion">
+            <fhi-checkbox
+              data-step="1"
+              label="Marker steg 1 som fullført: Prosjektet mitt ligger på GitHub"
+            ></fhi-checkbox>
+          </div>
+        </section>
+
+        <!-- Steg 2 -->
+        <section
+          id="steg-2"
+          class="card step-card"
+          aria-labelledby="steg-2-heading"
+        >
+          <div class="card-header">
+            <h2 id="steg-2-heading">
+              Steg 2: Aktiver GitHub Pages i innstillingene
+            </h2>
+            <fhi-tag color="accent" variant="bordered">Steg 2</fhi-tag>
+          </div>
+
+          <p>
+            Før en GitHub Actions-workflow får lov til å publisere nettsiden
+            din, må du fortelle GitHub at <strong>GitHub Actions</strong> skal
+            brukes som kilde for GitHub Pages.
+          </p>
+
+          <ol class="instruction-list">
+            <li>Gå til repositoriet ditt på GitHub i nettleseren.</li>
+            <li>Klikk på <strong>Settings</strong> i toppmenyen.</li>
+            <li>
+              I menyen til venstre (under <em>Code and automation</em>), klikk
+              på <strong>Pages</strong>.
+            </li>
+            <li>
+              Under <strong>Build and deployment</strong> &rarr;
+              <strong>Source</strong>, bytt fra
+              <em>Deploy from a branch</em> til <strong>GitHub Actions</strong>.
+            </li>
+          </ol>
+
+          <fhi-callout color="neutral" variant="bordered">
+            <fhi-icon-circle-info slot="icon"></fhi-icon-circle-info>
+            <p>
+              <strong>Tips:</strong> Innstillingen lagres automatisk så snart du
+              velger <strong>GitHub Actions</strong> i nedtrekksmenyen. Ignorer
+              forslagene til ferdige workflows som GitHub viser på siden — vi
+              lager vår egen fil i neste steg.
+            </p>
+          </fhi-callout>
+
+          <div class="step-completion">
+            <fhi-checkbox
+              data-step="2"
+              label="Marker steg 2 som fullført: Source er satt til GitHub Actions"
+            ></fhi-checkbox>
+          </div>
+        </section>
+
+        <!-- Steg 3 -->
+        <section
+          id="steg-3"
+          class="card step-card"
+          aria-labelledby="steg-3-heading"
+        >
+          <div class="card-header">
+            <h2 id="steg-3-heading">Steg 3: Opprett GitHub Actions-workflow</h2>
+            <fhi-tag color="accent" variant="bordered">Steg 3</fhi-tag>
+          </div>
+
+          <p>
+            GitHub Actions ser etter YAML-filer i mappen
+            <code>.github/workflows/</code> i roten av repositoriet ditt. For en
+            vanlig statisk nettside med ren HTML, CSS og JavaScript trenger vi
+            <strong>ikke</strong> noe byggesteg — vi kan laste opp filene
+            direkte.
+          </p>
+          <fhi-callout
+            color="neutral"
+            heading="Hva er YAML?"
+            variant="bordered"
+          >
+            <fhi-icon-circle-info slot="icon"></fhi-icon-circle-info>
+            <p>
+              YAML (YAML Ain't Markup Language) er et menneskelesbart
+              dataserialiseringsspråk, designet for datautveksling mellom språk
+              med ulike datastrukturer.
+              <fhi-link href="https://yaml.com/" target="_blank"
+                >Lær mer</fhi-link
+              >
+            </p>
+          </fhi-callout>
+
+          <ol class="instruction-list">
+            <li>
+              I ditt eget prosjekt, opprett mappen
+              <code>.github/workflows</code> (husk punktumet foran
+              <code>.github</code>).
+            </li>
+            <li>
+              Opprett filen <code>.github/workflows/deploy.yml</code> og lim inn
+              følgende oppsett:
+            </li>
+          </ol>
+
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-label">.github/workflows/deploy.yml</span>
+              <fhi-button
+                color="neutral"
+                variant="subtle"
+                size="small"
+                type="button"
+                data-copy-target="code-step-3-yaml"
+              >
+                <fhi-icon-copy></fhi-icon-copy>
+                <span class="copy-btn-text">Kopier kode</span>
+              </fhi-button>
+            </div>
+            <pre><code id="code-step-3-yaml">name: Publiser til GitHub Pages
+
+# Når skal denne workflowen kjøre?
+on:
+  # Kjør automatisk ved push til main-branchen
+  push:
+    branches: ["main"]
+
+  # Gjør det mulig å starte workflowen manuelt fra Actions-fanen på GitHub
+  workflow_dispatch:
+
+# Tillatelser som trengs for å publisere til GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Sikrer at kun én publisering kjører om gangen
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sjekk ut koden fra repositoriet
+        uses: actions/checkout@v4
+
+      - name: Konfigurer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Last opp filer som Pages-artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # '.' betyr rotmappen i repositoriet ditt.
+          # Hvis index.html ligger i en undermappe (f.eks. 'src/'), endrer du '.' til './src'
+          path: "."
+
+      - name: Publiser til GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4</code></pre>
+          </div>
+
+          <h3>Hva betyr de viktigste delene i filen?</h3>
+          <ul class="explanation-list">
+            <li>
+              <code>on: push: branches: ["main"]</code>: Starter workflowen
+              automatisk hver gang du pusher til <code>main</code>.
+            </li>
+            <li>
+              <code>workflow_dispatch</code>: Gir deg en
+              <em>"Run workflow"</em>-knapp under <strong>Actions</strong>-fanen
+              på GitHub.
+            </li>
+            <li>
+              <code>permissions</code>: Gir jobben lesetilgang til koden (<code
+                >contents: read</code
+              >) og tillatelse til å rulle ut til GitHub Pages (<code
+                >pages: write</code
+              >
+              og <code>id-token: write</code>).
+            </li>
+            <li>
+              <code>actions/upload-pages-artifact@v3</code>: Pakker sammen alle
+              filene i <code>path: "."</code> til en pakke klar for publisering.
+            </li>
+            <li>
+              <code>actions/deploy-pages@v4</code>: Publiserer pakken og gjør
+              nettsiden tilgjengelig på din <code>github.io</code>-adresse.
+            </li>
+          </ul>
+
+          <p>
+            Commit og push <code>.github/workflows/deploy.yml</code> til GitHub:
+          </p>
+
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-label">Terminal</span>
+              <fhi-button
+                color="neutral"
+                variant="subtle"
+                size="small"
+                type="button"
+                data-copy-target="code-step-3-git"
+              >
+                <fhi-icon-copy></fhi-icon-copy>
+                <span class="copy-btn-text">Kopier kode</span>
+              </fhi-button>
+            </div>
+            <pre><code id="code-step-3-git">git add .github/workflows/deploy.yml
+git commit -m "Legg til GitHub Actions workflow for GitHub Pages"
+git push origin main</code></pre>
+          </div>
+
+          <div class="step-completion">
+            <fhi-checkbox
+              data-step="3"
+              label="Marker steg 3 som fullført: deploy.yml er opprettet og pushet"
+            ></fhi-checkbox>
+          </div>
+        </section>
+
+        <!-- Steg 4 -->
+        <section
+          id="steg-4"
+          class="card step-card"
+          aria-labelledby="steg-4-heading"
+        >
+          <div class="card-header">
+            <h2 id="steg-4-heading">
+              Steg 4: Test automatisk publisering (CI/CD i praksis)
+            </h2>
+            <fhi-tag color="accent" variant="bordered">Steg 4</fhi-tag>
+          </div>
+
+          <p>
+            Nå skal du sjekke at nettsiden din er publisert og teste at nye
+            endringer ruller ut automatisk.
+          </p>
+
+          <ol class="instruction-list">
+            <li>
+              Gå til <strong>Actions</strong>-fanen i repositoriet ditt på
+              GitHub.
+            </li>
+            <li>
+              Klikk på kjøringen for <strong>Publiser til GitHub Pages</strong>.
+              Når steget <strong>deploy</strong> har fått en grønn hake, står
+              nettadressen til siden din rett under jobben (f.eks.
+              <code
+                >https://&lt;brukernavn&gt;.github.io/&lt;repo-navn&gt;/</code
+              >).
+            </li>
+            <li>
+              Åpne nettadressen i nettleseren og bekreft at siden din vises.
+            </li>
+            <li>
+              Gjør en synlig endring i din egen <code>index.html</code> eller
+              <code>styles.css</code> lokalt, og push endringen til GitHub:
+            </li>
+          </ol>
+
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-label">Terminal</span>
+              <fhi-button
+                color="neutral"
+                variant="subtle"
+                size="small"
+                type="button"
+                data-copy-target="code-step-4-git"
+              >
+                <fhi-icon-copy></fhi-icon-copy>
+                <span class="copy-btn-text">Kopier kode</span>
+              </fhi-button>
+            </div>
+            <pre><code id="code-step-4-git">git add .
+git commit -m "Oppdater innhold på nettsiden"
+git push origin main</code></pre>
+          </div>
+
+          <p>
+            Vent til den nye kjøringen under <strong>Actions</strong> blir
+            grønn, og last inn nettsiden på nytt (<code>Ctrl + F5</code> /
+            <code>Cmd + Shift + R</code>).
+          </p>
+
+          <div class="step-completion">
+            <fhi-checkbox
+              data-step="4"
+              label="Marker steg 4 som fullført: Nettsiden min oppdateres automatisk ved push"
+            ></fhi-checkbox>
+          </div>
+        </section>
+
+        <!-- Steg 5 (Valgfritt) -->
+        <section
+          id="steg-5"
+          class="card step-card"
+          aria-labelledby="steg-5-heading"
+        >
+          <div class="card-header">
+            <h2 id="steg-5-heading">
+              Steg 5 (Valgfritt): Byggesteg med npm og Vite
+            </h2>
+            <fhi-tag color="info" variant="bordered">Valgfritt</fhi-tag>
+          </div>
+
+          <p>
+            Bruker prosjektet ditt npm-pakker (som f.eks.
+            <code>@folkehelseinstituttet/designsystem</code>) eller et
+            byggeverktøy som <strong>Vite</strong>? Da kan ikke nettleseren lese
+            <code>node_modules</code> direkte. I stedet må GitHub Actions
+            installere pakkene og kjøre <code>npm run build</code> før den
+            ferdigbygde <code>dist/</code>-mappen publiseres.
+          </p>
+
+          <h3>1. Sett relativ base-sti i Vite</h3>
+          <p>
+            På GitHub Pages ligger prosjektet gjerne på en undermappe i URL-en
+            (<code>/&lt;repo-navn&gt;/</code>). Legg til
+            <code>vite.config.js</code> med <code>base: "./"</code> slik at
+            lenker til CSS- og JS-filer fungerer uansett hva repositoriet heter:
+          </p>
+
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-label">vite.config.js</span>
+              <fhi-button
+                color="neutral"
+                variant="subtle"
+                size="small"
+                type="button"
+                data-copy-target="code-step-5-vite"
+              >
+                <fhi-icon-copy></fhi-icon-copy>
+                <span class="copy-btn-text">Kopier kode</span>
+              </fhi-button>
+            </div>
+            <pre><code id="code-step-5-vite">import { defineConfig } from "vite";
+
+export default defineConfig({
+  base: "./",
+});</code></pre>
+          </div>
+
+          <h3>2. Utvid workflowen med Node.js og byggesteg</h3>
+          <p>
+            Bytt ut innholdet i <code>.github/workflows/deploy.yml</code> med
+            denne versjonen som kjører <code>npm ci</code> og
+            <code>npm run build</code>, og laster opp <code>./dist</code>:
+          </p>
+
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-label"
+                >.github/workflows/deploy.yml (med npm build)</span
+              >
+              <fhi-button
+                color="neutral"
+                variant="subtle"
+                size="small"
+                type="button"
+                data-copy-target="code-step-5-yaml"
+              >
+                <fhi-icon-copy></fhi-icon-copy>
+                <span class="copy-btn-text">Kopier kode</span>
+              </fhi-button>
+            </div>
+            <pre><code id="code-step-5-yaml">name: Bygg og publiser til GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sjekk ut koden fra repositoriet
+        uses: actions/checkout@v4
+
+      - name: Sett opp Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Installer avhengigheter
+        run: npm ci
+
+      - name: Bygg prosjektet
+        run: npm run build
+
+      - name: Konfigurer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Last opp dist-mappen som Pages-artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dist"
+
+      - name: Publiser til GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4</code></pre>
+          </div>
+
+          <div class="step-completion">
+            <fhi-checkbox
+              data-step="5"
+              label="Marker steg 5 som fullført (valgfritt byggesteg)"
+            ></fhi-checkbox>
+          </div>
+        </section>
+
+        <!-- Feilsøking -->
+        <section
+          id="feilsoking"
+          class="card step-card"
+          aria-labelledby="feilsoking-heading"
+        >
+          <div class="card-header">
+            <h2 id="feilsoking-heading">Vanlige feil og feilsøking</h2>
+            <fhi-tag color="warning" variant="bordered">Tips</fhi-tag>
+          </div>
+
+          <ul class="explanation-list">
+            <li>
+              <strong>Workflowen starter ikke når jeg pusher:</strong>
+              Kontroller at filen heter nøyaktig
+              <code>.github/workflows/deploy.yml</code> og at branchen din heter
+              <code>main</code> (hvis den heter <code>master</code>, endre
+              <code>branches: ["main"]</code> i YAML-filen).
+            </li>
+            <li>
+              <strong>Jobben feiler på Configure eller Deploy Pages:</strong>
+              Dobbeltsjekk <strong>Steg 2</strong> — under
+              <em>Settings &rarr; Pages &rarr; Source</em> må det stå
+              <strong>GitHub Actions</strong>, og repositoriet må være
+              <strong>Public</strong>.
+            </li>
+            <li>
+              <strong>Nettsiden viser 404 Not Found:</strong>
+              Sjekk at <code>index.html</code> ligger i mappen som
+              <code>path</code> peker til i
+              <code>actions/upload-pages-artifact@v3</code> (<code>"."</code>
+              for rotmappen, eller <code>"./dist"</code> ved bruk av Vite).
+            </li>
+            <li>
+              <strong>Steget <code>npm ci</code> feiler (i Steg 5):</strong>
+              Pass på at både <code>package.json</code> og
+              <code>package-lock.json</code> er committet og pushet til GitHub.
+            </li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          Laget for leksjonen
+          <strong>Publisering til GitHub Pages med GitHub Actions</strong> med
+          <strong>@folkehelseinstituttet/designsystem</strong>.
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
