@@ -228,7 +228,7 @@ a:hover {
 }
 
 .sidebar-ref-item {
-  margin: var(--fhi-spacing-100) 0;
+  margin-top: var(--fhi-spacing-100);
   padding: var(--fhi-spacing-100) 0;
   border-top: var(--border-width) solid var(--border-color);
   border-bottom: var(--border-width) solid var(--border-color);
@@ -267,10 +267,6 @@ a:hover {
 
 .sidebar-step-item.is-completed .step-number {
   color: var(--fhi-color-success-text-default);
-}
-
-.sidebar-actions {
-  padding-top: var(--fhi-spacing-100);
 }
 
 /* Main Content & Step Cards */
